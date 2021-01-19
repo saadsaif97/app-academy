@@ -1,0 +1,37 @@
+
+[1mFrom:[0m string.c (C Method):
+[1mOwner:[0m String
+[1mVisibility:[0m public
+[1mSignature:[0m end_with?(*arg1)
+[1mNumber of lines:[0m 30
+
+Returns true if [32mstr[0m ends with one of the [32msuffixes[0m given.
+
+  [31m[1;31m"[0m[31mhello[1;31m"[0m[31m[0m.end_with?([31m[1;31m"[0m[31mello[1;31m"[0m[31m[0m)               [1;34m#=> true[0m
+
+  [1;34m# returns true if one of the [32msuffixes[0m matches.[0m
+  [31m[1;31m"[0m[31mhello[1;31m"[0m[31m[0m.end_with?([31m[1;31m"[0m[31mheaven[1;31m"[0m[31m[0m, [31m[1;31m"[0m[31mello[1;31m"[0m[31m[0m)     [1;34m#=> true[0m
+  [31m[1;31m"[0m[31mhello[1;31m"[0m[31m[0m.end_with?([31m[1;31m"[0m[31mheaven[1;31m"[0m[31m[0m, [31m[1;31m"[0m[31mparadise[1;31m"[0m[31m[0m) [1;34m#=> false[0m
+
+static [1;34;4mVALUE[0m
+rb_str_end_with(int argc, [1;34;4mVALUE[0m *argv, [1;34;4mVALUE[0m str)
+{
+    int i;
+    char *p, *s, *e;
+    rb_encoding *enc;
+
+    [32mfor[0m (i=[1;34m0[0m; i<argc; i++) {
+	[1;34;4mVALUE[0m tmp = argv[i];
+	StringValue(tmp);
+	enc = rb_enc_check(str, tmp);
+	[32mif[0m (RSTRING_LEN(str) < RSTRING_LEN(tmp)) continue;
+	p = RSTRING_PTR(str);
+        e = p + RSTRING_LEN(str);
+	s = e - RSTRING_LEN(tmp);
+	[32mif[0m (rb_enc_left_char_head(p, s, e, enc) != s)
+	    continue;
+	[32mif[0m (memcmp(s, RSTRING_PTR(tmp), RSTRING_LEN(tmp)) == [1;34m0[0m)
+	    [32mreturn[0m [1;34;4mQtrue[0m;
+    }
+    [32mreturn[0m [1;34;4mQfalse[0m;
+}
